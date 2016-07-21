@@ -5,9 +5,16 @@
 /* Start of preamble from import "C" comments.  */
 
 
-#line 3 "/home/ory/Documents/go-redis-modules-sdk/go/module.go"
+#line 3 "/home/dvirsky/code/go-redis-modules-sdk/go/module.go"
 
 #include <stdlib.h>
+#include "../redismodule.h"
+
+static char *rm_string(RedisModuleString **s, int offset) {
+	return (char*)RedisModule_StringPtrLen(s[offset], NULL);
+}
+
+
 
 
 
@@ -32,16 +39,14 @@ typedef GoUint64 GoUint;
 typedef __SIZE_TYPE__ GoUintptr;
 typedef float GoFloat32;
 typedef double GoFloat64;
-typedef float _Complex GoComplex64;
-typedef double _Complex GoComplex128;
+typedef __complex float GoComplex64;
+typedef __complex double GoComplex128;
 
-/*
-  static assertion to make sure the file is being used on architecture
-  at least with matching size of GoInt.
-*/
+// static assertion to make sure the file is being used on architecture
+// at least with matching size of GoInt.
 typedef char _check_for_64_bit_pointer_matching_GoInt[sizeof(void*)==64/8 ? 1:-1];
 
-typedef struct { const char *p; GoInt n; } GoString;
+typedef struct { char *p; GoInt n; } GoString;
 typedef void *GoMap;
 typedef void *GoChan;
 typedef struct { void *t; void *v; } GoInterface;
@@ -56,7 +61,7 @@ extern "C" {
 #endif
 
 
-extern char* AGoFunction();
+extern char* GoDispatch(RedisModuleCtx* p0, RedisModuleString** p1, size_t p2);
 
 #ifdef __cplusplus
 }
