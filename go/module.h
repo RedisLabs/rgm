@@ -14,6 +14,15 @@ static char *rm_string(RedisModuleString **s, int offset) {
 	return (char*)RedisModule_StringPtrLen(s[offset], NULL);
 }
 
+extern int GoDispatch(RedisModuleCtx* p0, RedisModuleString** p1, int p2);
+
+static int rm_createCmd(RedisModuleCtx *ctx, char *cmd, char *flags, int i, int j, int k) {
+	return RedisModule_CreateCommand(ctx, cmd, GoDispatch, flags, i,j,k);
+}
+
+static int rm_replySimpleString(RedisModuleCtx *ctx, char *str) {
+	return RedisModule_ReplyWithSimpleString(ctx, str);
+}
 
 
 
@@ -61,7 +70,9 @@ extern "C" {
 #endif
 
 
-extern char* GoDispatch(RedisModuleCtx* p0, RedisModuleString** p1, size_t p2);
+extern int GoDispatch(RedisModuleCtx* p0, RedisModuleString** p1, int p2);
+
+extern int GoOnLoad(RedisModuleCtx* p0);
 
 #ifdef __cplusplus
 }
