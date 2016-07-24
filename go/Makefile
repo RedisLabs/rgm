@@ -21,14 +21,16 @@ endif
 CFLAGS = -I$(RM_INCLUDE_DIR) -Wall -g -fPIC -lc -lm -Og -std=gnu99  
 CC=gcc
 
-.PHONY: module.go
+.PHONY: module.so
+
 all: module.so 
 
-module.so: module.o module.go
-	$(LD) -o $@ module.o module.a $(SHOBJ_LDFLAGS) $(LIBS) -lc 
+module.so:
+	go build -o module.so -buildmode=c-shared
+	#$(LD) -o $@ module.o module.a $(SHOBJ_LDFLAGS) $(LIBS) -lc 
 
-module.go:
-	CGO_CFLAGS="-fPIC" go build -o module.so -gcflags=-shared -asmflags -shared -installsuffix _shared -buildmode=c-shared redis.go module.go onload.go
+module.go: module.so
+	#CGO_CFLAGS="-fPIC" go build -o module.so -gcflags=-shared -asmflags -shared -installsuffix _shared -buildmode=c-shared redis.go module.go onload.go
 
 clean:
 	rm -rf *.xo *.so *.o *.a

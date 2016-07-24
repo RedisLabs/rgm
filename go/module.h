@@ -5,14 +5,20 @@
 /* Start of preamble from import "C" comments.  */
 
 
+#line 3 "/home/dvirsky/code/go-redis-modules-sdk/go/dispatch.go"
+
+#include "../redismodule.h"
+static char *rm_string(RedisModuleString **s, int offset) {
+	return (char*)RedisModule_StringPtrLen(s[offset], NULL);
+}
+
+
 #line 3 "/home/dvirsky/code/go-redis-modules-sdk/go/redis.go"
 
 #include <stdlib.h>
 #include "../redismodule.h"
 
-static char *rm_string(RedisModuleString **s, int offset) {
-	return (char*)RedisModule_StringPtrLen(s[offset], NULL);
-}
+
 
 extern int GoDispatch(RedisModuleCtx* p0, RedisModuleString** p1, int p2);
 
@@ -51,7 +57,6 @@ static int rm_replyWithDouble(RedisModuleCtx *ctx, double d) {
 static int rm_replyWithLongLong(RedisModuleCtx *ctx, long long l) {
 	return RedisModule_ReplyWithLongLong(ctx, l);
 }
-
 
 
 
