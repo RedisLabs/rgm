@@ -28,7 +28,7 @@ module.so: module.o module.go
 	$(LD) -o $@ module.o module.a $(SHOBJ_LDFLAGS) $(LIBS) -lc 
 
 module.go:
-	CGO_CFLAGS="-fPIC" go build -gcflags=-shared -asmflags -shared -installsuffix _shared -buildmode=c-archive module.go
+	CGO_CFLAGS="-fPIC" go build -o module.so -gcflags=-shared -asmflags -shared -installsuffix _shared -buildmode=c-archive redis.go module.go onload.go
 
 clean:
 	rm -rf *.xo *.so *.o *.a

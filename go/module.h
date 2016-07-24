@@ -5,7 +5,7 @@
 /* Start of preamble from import "C" comments.  */
 
 
-#line 3 "/home/dvirsky/code/go-redis-modules-sdk/go/module.go"
+#line 3 "/home/dvirsky/code/go-redis-modules-sdk/go/redis.go"
 
 #include <stdlib.h>
 #include "../redismodule.h"
@@ -16,13 +16,42 @@ static char *rm_string(RedisModuleString **s, int offset) {
 
 extern int GoDispatch(RedisModuleCtx* p0, RedisModuleString** p1, int p2);
 
-static int rm_createCmd(RedisModuleCtx *ctx, char *cmd, char *flags, int i, int j, int k) {
+static int rm_CreateCmd(RedisModuleCtx *ctx, char *cmd, char *flags, int i, int j, int k) {
 	return RedisModule_CreateCommand(ctx, cmd, GoDispatch, flags, i,j,k);
 }
 
-static int rm_replySimpleString(RedisModuleCtx *ctx, char *str) {
+static int rm_replyWithSimpleString(RedisModuleCtx *ctx, char *str) {
 	return RedisModule_ReplyWithSimpleString(ctx, str);
 }
+
+static int rm_replyWithError(RedisModuleCtx *ctx, char *str) {
+	return RedisModule_ReplyWithError(ctx, str);
+}
+
+static int rm_replyWithArray(RedisModuleCtx *ctx, long len) {
+	return RedisModule_ReplyWithArray(ctx, len);
+}
+
+static void rm_setArrayLength(RedisModuleCtx *ctx, long len) {
+	 RedisModule_ReplySetArrayLength(ctx, len);
+}
+
+static int rm_replyWithString(RedisModuleCtx *ctx, const char *buf, size_t len) {
+	return RedisModule_ReplyWithStringBuffer(ctx, buf, len);
+}
+
+static int rm_replyWithNull(RedisModuleCtx *ctx) {
+	return RedisModule_ReplyWithNull(ctx);
+}
+
+static int rm_replyWithDouble(RedisModuleCtx *ctx, double d) {
+	return RedisModule_ReplyWithDouble(ctx, d);
+}
+
+static int rm_replyWithLongLong(RedisModuleCtx *ctx, long long l) {
+	return RedisModule_ReplyWithLongLong(ctx, l);
+}
+
 
 
 
@@ -48,14 +77,16 @@ typedef GoUint64 GoUint;
 typedef __SIZE_TYPE__ GoUintptr;
 typedef float GoFloat32;
 typedef double GoFloat64;
-typedef __complex float GoComplex64;
-typedef __complex double GoComplex128;
+typedef float _Complex GoComplex64;
+typedef double _Complex GoComplex128;
 
-// static assertion to make sure the file is being used on architecture
-// at least with matching size of GoInt.
+/*
+  static assertion to make sure the file is being used on architecture
+  at least with matching size of GoInt.
+*/
 typedef char _check_for_64_bit_pointer_matching_GoInt[sizeof(void*)==64/8 ? 1:-1];
 
-typedef struct { char *p; GoInt n; } GoString;
+typedef struct { const char *p; GoInt n; } GoString;
 typedef void *GoMap;
 typedef void *GoChan;
 typedef struct { void *t; void *v; } GoInterface;
