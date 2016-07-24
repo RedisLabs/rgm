@@ -2,15 +2,9 @@ package main
 
 /*
 #include <stdlib.h>
-#include "../redismodule.h"
+#include "common.h"
 
 
-
-extern int GoDispatch(RedisModuleCtx* p0, RedisModuleString** p1, int p2);
-
-static int rm_CreateCmd(RedisModuleCtx *ctx, char *cmd, char *flags, int i, int j, int k) {
-	return RedisModule_CreateCommand(ctx, cmd, GoDispatch, flags, i,j,k);
-}
 
 static int rm_replyWithSimpleString(RedisModuleCtx *ctx, char *str) {
 	return RedisModule_ReplyWithSimpleString(ctx, str);
@@ -50,7 +44,6 @@ import "C"
 import (
 	"C"
 	"errors"
-	"strings"
 )
 
 // RedisModule is a go wrapper on a redis context
@@ -90,21 +83,3 @@ func (r *RedisModule) ReplyWithDouble(d float64) error {
 	}
 	return nil
 }
-
-func registerCmd(ctx *C.RedisModuleCtx, cmd, flags string, handler RedisHandler) error {
-
-	if C.rm_CreateCmd(ctx, C.CString(cmd), C.CString(flags), 1, 1, 1) == C.REDISMODULE_ERR {
-		return errors.New("Could not register command")
-	}
-
-	handlers[strings.ToLower(cmd)] = handler
-	return nil
-}
-
-//export MODULE_NAME
-var ModuleName = "FOO"
-
-/*
-
- */
-

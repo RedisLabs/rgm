@@ -1,7 +1,8 @@
 package main
 
 /*
-#include "../redismodule.h"
+#include "common.h"
+
 static char *rm_string(RedisModuleString **s, int offset) {
 	return (char*)RedisModule_StringPtrLen(s[offset], NULL);
 }
@@ -23,8 +24,8 @@ func convertArgs(argv **C.RedisModuleString, argc int) []string {
 	return args
 }
 
-//export GoDispatch
-func GoDispatch(ctx *C.RedisModuleCtx, argv **C.RedisModuleString, argc C.int) C.int {
+//export goDispatch
+func goDispatch(ctx *C.RedisModuleCtx, argv **C.RedisModuleString, argc C.int) C.int {
 
 	args := convertArgs(argv, int(argc))
 
