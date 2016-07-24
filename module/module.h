@@ -1,11 +1,11 @@
 /* Created by "go tool cgo" - DO NOT EDIT. */
 
-/* package _/home/dvirsky/code/go-redis-modules-sdk */
+/* package github.com/RedisLabs/rgm/module */
 
 /* Start of preamble from import "C" comments.  */
 
 
-#line 3 "/home/dvirsky/code/go-redis-modules-sdk/dispatch.go"
+#line 3 "/home/dvirsky/go/src/github.com/RedisLabs/rgm/module/dispatch.go"
 
 #include "common.h"
 
@@ -14,7 +14,7 @@ static char *rm_string(RedisModuleString **s, int offset) {
 }
 
 
-#line 3 "/home/dvirsky/code/go-redis-modules-sdk/module.go"
+#line 3 "/home/dvirsky/go/src/github.com/RedisLabs/rgm/module/module.go"
 
 // The pure C part of the module's initialization callback
 #include "common.h"
@@ -71,6 +71,8 @@ extern "C" {
 
 
 extern int goDispatch(RedisModuleCtx* p0, RedisModuleString** p1, int p2);
+
+extern char* getModuleName();
 
 extern int goOnLoad(RedisModuleCtx* p0);
 

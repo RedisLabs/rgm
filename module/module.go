@@ -1,4 +1,4 @@
-package main
+package module
 
 /*
 // The pure C part of the module's initialization callback
@@ -60,41 +60,65 @@ var (
 	CommandNoCluster = "no-cluster"
 )
 
-// ModuleInitializer is what the module's code gets when it needs to register a module
+// CommandHandler is what a module should implement to handle a specific command
+type CommandHandler func(*Redis, []string) error
 
-func InitModule(name string) error {
-
-	moduleName = name
-	return nil
-}
-
-type commandDescriptor struct {
+type command struct {
 	name     string
-	handler  RedisHandler
+	handler  CommandHandler
 	flags    []string
 	keyStart int
 	keyEnd   int
 	keyStep  int
 }
 
-var registeredCommands = []commandDescriptor{}
+type Module struct {
+	name     string
+	commands []command
+}
 
-func AddCommand(name string, handler RedisHandler, flags ...string) {
+func NewModule(name string) *Module {
+	return &Module{
+		name:     name,
+		commands: make([]command, 0),
+	}
+}
 
-	registeredCommands = append(registeredCommands, commandDescriptor{
+func (m *Module) AddCommand(name string, handler CommandHandler,
+	flags []string, keyStart, keyEnd, keyStep int) *Module {
+	m.commands = append(m.commands, command{
 		name:     name,
 		handler:  handler,
 		flags:    flags,
-		keyStart: 1,
-		keyEnd:   1,
-		keyStep:  1,
+		keyStart: keyStart,
+		keyEnd:   keyEnd,
+		keyStep:  keyStep,
 	})
-
+	return m
 }
 
-var moduleName string
+var module *Module
 
-func registerCmd(ctx *C.RedisModuleCtx, cmd, flags string, handler RedisHandler) error {
+func InitModule(m *Module) error {
+
+	if m.commands == nil || len(m.commands) == 0 {
+		return errors.New("No commands registered in module")
+	}
+
+	module = m
+
+	return nil
+}
+
+//export getModuleName
+func getModuleName() *C.char {
+	if module == nil {
+		panic("No module registered!")
+	}
+	return C.CString(module.name)
+}
+
+func registerCmd(ctx *C.RedisModuleCtx, cmd, flags string, handler CommandHandler) error {
 
 	if C.rm_CreateCmd(ctx, C.CString(cmd), C.CString(flags), 1, 1, 1) == C.REDISMODULE_ERR {
 		return errors.New("Could not register command")
@@ -107,11 +131,11 @@ func registerCmd(ctx *C.RedisModuleCtx, cmd, flags string, handler RedisHandler)
 //export goOnLoad
 func goOnLoad(ctx *C.RedisModuleCtx) C.int {
 
-	if moduleName == "" {
+	if module.name == "" {
 		panic("No module name is set!")
 	}
 
-	for _, cmd := range registeredCommands {
+	for _, cmd := range module.commands {
 		if err := registerCmd(ctx, cmd.name, strings.Join(cmd.flags, " "), cmd.handler); err != nil {
 			return C.REDISMODULE_ERR
 		}
@@ -120,15 +144,3 @@ func goOnLoad(ctx *C.RedisModuleCtx) C.int {
 	return C.REDISMODULE_OK
 
 }
-
-func MyHandler(m *RedisModule, args []string) error {
-	return m.ReplyWithSimpleString("OK!")
-}
-
-func init() {
-	InitModule("gogo")
-	AddCommand("gogo.foo", MyHandler, CommandReadOnly)
-	AddCommand("gogo.bar", MyHandler, CommandReadOnly, CommandAdmin)
-}
-
-func main() {}

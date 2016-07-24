@@ -1,4 +1,4 @@
-package main
+package module
 
 /*
 #include "common.h"
@@ -8,10 +8,9 @@ static char *rm_string(RedisModuleString **s, int offset) {
 }
 */
 import "C"
+import "strings"
 
-type RedisHandler func(*RedisModule, []string) error
-
-var handlers = map[string]RedisHandler{}
+var handlers = map[string]CommandHandler{}
 
 // convertArgs converts a redis argument list to a go string slice
 func convertArgs(argv **C.RedisModuleString, argc int) []string {
@@ -29,8 +28,12 @@ func goDispatch(ctx *C.RedisModuleCtx, argv **C.RedisModuleString, argc C.int) C
 
 	args := convertArgs(argv, int(argc))
 
-	r := &RedisModule{ctx}
-	h := handlers[args[0]]
+	r := &Redis{ctx}
+	h, found := handlers[strings.ToLower(args[0])]
+	// no handler???
+	if !found {
+		return C.REDISMODULE_ERR
+	}
 
 	h(r, args)
 	//fmt.Println(args)
