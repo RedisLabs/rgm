@@ -1,6 +1,6 @@
 /* Created by "go tool cgo" - DO NOT EDIT. */
 
-/* package command-line-arguments */
+/* package _/home/dvirsky/code/go-redis-modules-sdk/go */
 
 /* Start of preamble from import "C" comments.  */
 

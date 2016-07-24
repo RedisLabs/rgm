@@ -1,12 +1,13 @@
 package main
 
 /*
+// The pure C part of the module's initialization callback
 
 #include "../redismodule.h"
 
 extern int GoOnLoad(RedisModuleCtx *ctx);
 
- int RedisModule_OnLoad(RedisModuleCtx *ctx) {
+int RedisModule_OnLoad(RedisModuleCtx *ctx) {
 
     if (RedisModule_Init(ctx, "MODULE_NAME", 1, REDISMODULE_APIVER_1) == REDISMODULE_ERR) {
         return REDISMODULE_ERR;
